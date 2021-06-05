@@ -9,12 +9,17 @@ import { TaskService } from 'src/app/services/task.service';
 })
 export class TasksComponent implements OnInit {
   
+  searchText = '';
+  showForm = false;
+  editForm = false;
+
   myTask: Task = {
     label: '',
     completed: false
   }
 
   tasks: Task[] = [];
+  resultTasks: Task[] = [];
 
   constructor(private taskService: TaskService) { }
 
@@ -24,7 +29,9 @@ export class TasksComponent implements OnInit {
 
   getTasks(){
     this.taskService.findAll()
-        .subscribe(tasks => this.tasks = tasks);
+        .subscribe(tasks => {
+          this.resultTasks = this.tasks = tasks
+        });
   }
 
   deleteTask(id){
@@ -39,6 +46,7 @@ export class TasksComponent implements OnInit {
         .subscribe((task) => {
           this.tasks = [task, ...this.tasks];
           this.resetTask();
+          this.showForm = false;
         })
   }
 
@@ -47,6 +55,32 @@ export class TasksComponent implements OnInit {
       label:'',
       completed: false
     }
+  }
+
+  toggleCompleted(task){
+    this.taskService.completed(task.id, task.completed)
+        .subscribe(() => {
+          task.completed = !task.completed
+        })
+  }
+
+
+  editTask(task){
+    this.myTask = task;
+    this.editForm = true;
+  }
+
+  updateTask(){
+    this.taskService.update(this.myTask)
+        .subscribe(task => {
+          this.resetTask();
+          this.editForm = false;
+        })
+  }
+
+
+  searchTasks(){
+    this.resultTasks = this.tasks.filter((task) => task.label.toLowerCase().includes(this.searchText.toLocaleLowerCase()));
   }
 
 }
