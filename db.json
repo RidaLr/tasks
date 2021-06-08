@@ -22,7 +22,7 @@
     },
     {
       "label": "Learn Python",
-      "completed": false,
+      "completed": true,
       "id": 5
     }
   ]
